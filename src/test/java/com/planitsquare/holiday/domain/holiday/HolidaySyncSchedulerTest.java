@@ -1,6 +1,6 @@
 package com.planitsquare.holiday.domain.holiday;
 
-import com.planitsquare.holiday.domain.holiday.service.HolidaySyncScheduler;
+import com.planitsquare.holiday.domain.holiday.scheduler.HolidaySyncScheduler;
 import com.planitsquare.holiday.domain.holiday.service.HolidaySyncService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,8 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.time.Year;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 class HolidaySyncSchedulerTest {
