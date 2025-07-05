@@ -2,44 +2,50 @@ package com.planitsquare.holiday.domain.holiday.service;
 
 import com.planitsquare.holiday.domain.country.client.CountryApiClient;
 import com.planitsquare.holiday.domain.country.dto.CountryResponse;
-import com.planitsquare.holiday.domain.holiday.client.HolidayApiClient;
-import com.planitsquare.holiday.domain.holiday.converter.HolidayConverter;
+import com.planitsquare.holiday.domain.holiday.client.PublicHolidayClient;
+import com.planitsquare.holiday.domain.holiday.dto.PublicHolidayResponse;
+import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class HolidayService {
-
-    private final HolidayApiClient apiClient;
-    private final HolidayRepository repository;
-    private final HolidayConverter converter;
-    private final CountryApiClient countryApiClient;
 
     private static final int START_YEAR = 2020;
     private static final int END_YEAR = 2025;
 
-    public HolidayService(HolidayApiClient apiClient, HolidayRepository repository, HolidayConverter converter, CountryApiClient countryApiClient) {
-        this.apiClient = apiClient;
-        this.repository = repository;
-        this.converter = converter;
-        this.countryApiClient = countryApiClient;
-    }
+    private final CountryApiClient countryApiClient;
+    private final PublicHolidayClient publicHolidayClient;
+    private final HolidayRepository holidayRepository;
 
     public void sync(int year, String countryCode) {
-        var responses = apiClient.getHolidays(year, countryCode);
-        var holidays = converter.convert(responses);
-        repository.saveAll(holidays);
+        List<PublicHolidayResponse> response = publicHolidayClient.getHolidays(year, countryCode);
+        List<Holiday> holidays = response.stream()
+                .map(Holiday::of)
+                .toList();
+        holidayRepository.saveAll(holidays);
+    }
+
+    public void syncByYear(int year) {
+        List<CountryResponse> countries = countryApiClient.getAvailableCountries();
+        for (CountryResponse country : countries) {
+            sync(year, country.getCountryCode());
+        }
+    }
+
+    public void syncByCountry(String countryCode) {
+        for (int year = START_YEAR; year <= END_YEAR; year++) {
+            sync(year, countryCode);
+        }
     }
 
     public void bulkSyncAll() {
-        List<CountryResponse> countries = countryApiClient.getAvailableCountries();
-
         for (int year = START_YEAR; year <= END_YEAR; year++) {
-            for (CountryResponse country : countries) {
-                this.sync(year, country.getCountryCode());
-            }
+            syncByYear(year);
         }
     }
 }

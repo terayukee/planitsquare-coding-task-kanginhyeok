@@ -12,15 +12,8 @@ public class DefaultHolidayConverter implements HolidayConverter {
     @Override
     public List<Holiday> convert(List<PublicHolidayResponse> responses) {
         return responses.stream()
-                .map(response -> {
-                    Holiday h = new Holiday();
-                    h.setDate(response.getDate());
-                    h.setName(response.getName());
-                    h.setLocalName(response.getLocalName());
-                    h.setCountryCode(response.getCountryCode());
-                    h.setGlobal(response.isGlobal());
-                    return h;
-                })
+                .map(Holiday::of)
                 .toList();
     }
 }
+
