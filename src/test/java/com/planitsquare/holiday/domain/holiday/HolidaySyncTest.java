@@ -5,7 +5,7 @@ import com.planitsquare.holiday.domain.holiday.client.PublicHolidayClient;
 import com.planitsquare.holiday.domain.holiday.dto.PublicHolidayResponse;
 import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
-import com.planitsquare.holiday.domain.holiday.service.HolidayService;
+import com.planitsquare.holiday.domain.holiday.service.HolidaySyncService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-class HolidayServiceTest {
+class HolidaySyncTest {
 
     @Autowired
-    private HolidayService holidayService;
+    private HolidaySyncService holidaySyncService;
 
     @Autowired
     private HolidayRepository holidayRepository;
@@ -53,7 +53,7 @@ class HolidayServiceTest {
                 .thenReturn(List.of(mockResponse));
 
         // when
-        holidayService.sync(year, countryCode);
+        holidaySyncService.sync(year, countryCode);
 
         // then
         List<Holiday> holidays = holidayRepository.findByYearAndCountryCode(year, countryCode);

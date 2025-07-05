@@ -3,7 +3,7 @@ package com.planitsquare.holiday.domain.holiday;
 import com.planitsquare.holiday.domain.holiday.dto.HolidaySearchRequest;
 import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
-import com.planitsquare.holiday.domain.holiday.service.HolidayService;
+import com.planitsquare.holiday.domain.holiday.service.HolidaySearchService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class HolidaySearchTest {
 
     @Autowired
-    private HolidayService holidayService;
+    private HolidaySearchService holidaySearchService;
 
     @Autowired
     private HolidayRepository holidayRepository;
@@ -55,7 +55,7 @@ class HolidaySearchTest {
                 .build();
 
         // when
-        Page<Holiday> result = holidayService.search(request);
+        Page<Holiday> result = holidaySearchService.search(request);
 
         // then
         assertAll(

@@ -2,7 +2,7 @@ package com.planitsquare.holiday.domain.holiday;
 
 import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
-import com.planitsquare.holiday.domain.holiday.service.HolidayService;
+import com.planitsquare.holiday.domain.holiday.service.HolidaySyncService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class HolidayServiceIntegrationTest {
 
     @Autowired
-    private HolidayService holidayService;
+    private HolidaySyncService holidaySyncService;
 
     @Autowired
     private HolidayRepository holidayRepository;
@@ -25,7 +25,7 @@ class HolidayServiceIntegrationTest {
     @Test
     void 최근_5개년_전체_국가의_공휴일을_일괄_적재한다() {
         // when
-        holidayService.bulkSyncAll();
+        holidaySyncService.bulkSyncAll();
 
         // then
         List<Holiday> holidays = holidayRepository.findAll();
