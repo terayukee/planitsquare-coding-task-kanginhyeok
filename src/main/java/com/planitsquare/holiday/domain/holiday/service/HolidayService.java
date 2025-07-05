@@ -1,6 +1,8 @@
 package com.planitsquare.holiday.domain.holiday.service;
 
 import com.planitsquare.holiday.domain.holiday.client.PublicHolidayClient;
+import com.planitsquare.holiday.domain.holiday.dto.HolidayMapper;
+import com.planitsquare.holiday.domain.holiday.dto.PublicHolidayResponse;
 import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,11 @@ public class HolidayService {
     }
 
     public void sync(int year, String countryCode) {
-        List<Holiday> holidays = client.getHolidays(year, countryCode);
+        List<PublicHolidayResponse> dtos = client.getHolidays(year, countryCode);
+        List<Holiday> holidays = dtos.stream()
+                .map(HolidayMapper::toEntity)
+                .toList();
         repository.saveAll(holidays);
     }
+
 }
