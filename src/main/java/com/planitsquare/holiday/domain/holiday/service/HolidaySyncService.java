@@ -74,13 +74,13 @@ public class HolidaySyncService {
 
     @Transactional
     public void refresh(int year, String countryCode) {
-        holidayRepository.deleteByYearAndCountryCode(year, countryCode);
+        deleteInternal(year, countryCode);
         sync(year, countryCode);
     }
 
     @Transactional
     public void delete(int year, String countryCode) {
-        holidayRepository.deleteByYearAndCountryCode(year, countryCode);
+        deleteInternal(year, countryCode);
         log.info("🗑️ {}년 {} 공휴일 삭제 완료", year, countryCode);
     }
 
@@ -110,5 +110,9 @@ public class HolidaySyncService {
                 .fixed(r.isFixed())
                 .types(r.getTypes())
                 .build();
+    }
+
+    private void deleteInternal(int year, String countryCode) {
+        holidayRepository.deleteByYearAndCountryCode(year, countryCode);
     }
 }
