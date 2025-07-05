@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -21,8 +22,8 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class HolidayService {
 
-    private static final int START_YEAR = 2020;
-    private static final int END_YEAR = 2025;
+    private static final int END_YEAR = LocalDate.now().getYear();
+    private static final int START_YEAR = END_YEAR - 5;
 
     private final CountryApiClient countryApiClient;
     private final PublicHolidayClient publicHolidayClient;
