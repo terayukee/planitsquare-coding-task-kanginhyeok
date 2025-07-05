@@ -78,6 +78,13 @@ public class HolidaySyncService {
         sync(year, countryCode);
     }
 
+    @Transactional
+    public void delete(int year, String countryCode) {
+        holidayRepository.deleteByYearAndCountryCode(year, countryCode);
+        log.info("🗑️ {}년 {} 공휴일 삭제 완료", year, countryCode);
+    }
+
+
     // 🔽 내부 유틸 메서드들
 
     private List<Integer> getTargetYears() {
