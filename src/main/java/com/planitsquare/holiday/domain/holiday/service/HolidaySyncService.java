@@ -1,4 +1,3 @@
-// HolidaySyncService.java
 package com.planitsquare.holiday.domain.holiday.service;
 
 import com.planitsquare.holiday.domain.country.client.CountryApiClient;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -31,18 +31,7 @@ public class HolidaySyncService {
     private final HolidayRepository holidayRepository;
 
     public void sync(int year, String countryCode) {
-        List<PublicHolidayResponse> response = publicHolidayClient.getHolidays(year, countryCode);
-        List<Holiday> holidays = response.stream()
-                .map(r -> Holiday.builder()
-                        .date(r.getDate())
-                        .name(r.getName())
-                        .localName(r.getLocalName())
-                        .countryCode(r.getCountryCode())
-                        .global(r.isGlobal())
-                        .fixed(r.isFixed())
-                        .types(r.getTypes())
-                        .build())
-                .toList();
+        List<Holiday> holidays = fetchAndConvertHolidays(year, countryCode);
         holidayRepository.saveAll(holidays);
     }
 
@@ -54,7 +43,7 @@ public class HolidaySyncService {
     }
 
     public void syncByCountry(String countryCode) {
-        for (int year = START_YEAR; year <= END_YEAR; year++) {
+        for (int year : getTargetYears()) {
             sync(year, countryCode);
         }
     }
@@ -75,8 +64,8 @@ public class HolidaySyncService {
 
         List<CompletableFuture<Void>> futures = countries.stream()
                 .flatMap(country ->
-                        IntStream.rangeClosed(START_YEAR, END_YEAR)
-                                .mapToObj(year -> syncAsync(year, country.getCountryCode()))
+                        getTargetYears().stream()
+                                .map(year -> syncAsync(year, country.getCountryCode()))
                 )
                 .toList();
 
@@ -89,4 +78,30 @@ public class HolidaySyncService {
         sync(year, countryCode);
     }
 
+    // 🔽 내부 유틸 메서드들
+
+    private List<Integer> getTargetYears() {
+        return IntStream.rangeClosed(START_YEAR, END_YEAR)
+                .boxed()
+                .toList();
+    }
+
+    private List<Holiday> fetchAndConvertHolidays(int year, String countryCode) {
+        List<PublicHolidayResponse> response = publicHolidayClient.getHolidays(year, countryCode);
+        return response.stream()
+                .map(this::toEntity)
+                .collect(Collectors.toList());
+    }
+
+    private Holiday toEntity(PublicHolidayResponse r) {
+        return Holiday.builder()
+                .date(r.getDate())
+                .name(r.getName())
+                .localName(r.getLocalName())
+                .countryCode(r.getCountryCode())
+                .global(r.isGlobal())
+                .fixed(r.isFixed())
+                .types(r.getTypes())
+                .build();
+    }
 }
