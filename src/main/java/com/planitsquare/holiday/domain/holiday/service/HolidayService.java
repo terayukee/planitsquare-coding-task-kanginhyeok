@@ -3,11 +3,14 @@ package com.planitsquare.holiday.domain.holiday.service;
 import com.planitsquare.holiday.domain.country.client.CountryApiClient;
 import com.planitsquare.holiday.domain.country.dto.CountryResponse;
 import com.planitsquare.holiday.domain.holiday.client.PublicHolidayClient;
+import com.planitsquare.holiday.domain.holiday.dto.HolidaySearchRequest;
 import com.planitsquare.holiday.domain.holiday.dto.PublicHolidayResponse;
 import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -102,5 +105,14 @@ public class HolidayService {
         for (int year = START_YEAR; year <= END_YEAR; year++) {
             sync(year, countryCode);
         }
+    }
+
+    public Page<Holiday> search(HolidaySearchRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize());
+        return holidayRepository.searchByYearAndCountryCode(
+                request.getYear(),
+                request.getCountryCode(),
+                pageRequest
+        );
     }
 }
