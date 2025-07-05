@@ -8,10 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class PublicHolidayClient {
+public class PublicHolidayClient implements HolidayApiClient {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Override
     public List<PublicHolidayResponse> getHolidays(int year, String countryCode) {
         String url = "https://date.nager.at/api/v3/PublicHolidays/" + year + "/" + countryCode;
         PublicHolidayResponse[] response = restTemplate.getForObject(url, PublicHolidayResponse[].class);
