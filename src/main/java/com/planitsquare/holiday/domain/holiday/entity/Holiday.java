@@ -1,6 +1,5 @@
 package com.planitsquare.holiday.domain.holiday.entity;
 
-import com.planitsquare.holiday.domain.holiday.dto.PublicHolidayResponse;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,18 +36,4 @@ public class Holiday {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> types;
-
-    public static Holiday of(PublicHolidayResponse response) {
-        return Holiday.builder()
-                .date(response.getDate())
-                .localName(response.getLocalName())
-                .name(response.getName())
-                .countryCode(response.getCountryCode())
-                .fixed(response.isFixed())
-                .global(response.isGlobal())
-                .counties(response.getCounties())
-                .launchYear(response.getLaunchYear())
-                .types(response.getTypes())
-                .build();
-    }
 }

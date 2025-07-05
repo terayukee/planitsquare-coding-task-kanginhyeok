@@ -5,12 +5,14 @@ import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 public class HolidayMapper {
 
     public static Holiday toEntity(PublicHolidayResponse dto) {
-        Holiday holiday = new Holiday();
-        holiday.setDate(dto.getDate());
-        holiday.setName(dto.getName());
-        holiday.setLocalName(dto.getLocalName());
-        holiday.setCountryCode(dto.getCountryCode());
-        holiday.setGlobal(dto.isGlobal());
-        return holiday;
+        return Holiday.builder()
+                .date(dto.getDate())
+                .name(dto.getName())
+                .localName(dto.getLocalName())
+                .countryCode(dto.getCountryCode())
+                .global(dto.isGlobal())
+                .fixed(dto.isFixed())
+                .types(dto.getTypes())
+                .build();
     }
 }

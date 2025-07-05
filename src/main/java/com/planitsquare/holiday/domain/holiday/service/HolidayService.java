@@ -25,10 +25,20 @@ public class HolidayService {
     public void sync(int year, String countryCode) {
         List<PublicHolidayResponse> response = publicHolidayClient.getHolidays(year, countryCode);
         List<Holiday> holidays = response.stream()
-                .map(Holiday::of)
+                .map(r -> Holiday.builder()
+                        .date(r.getDate())
+                        .name(r.getName())
+                        .localName(r.getLocalName())
+                        .countryCode(r.getCountryCode())
+                        .global(r.isGlobal())
+                        .fixed(r.isFixed())
+                        .types(r.getTypes())
+                        .build()
+                )
                 .toList();
         holidayRepository.saveAll(holidays);
     }
+
 
     public void syncByYear(int year) {
         List<CountryResponse> countries = countryApiClient.getAvailableCountries();
