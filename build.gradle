@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.3'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
 }
 
 group = 'com.planitsquare'
@@ -29,12 +28,6 @@ dependencies {
 	// Swagger / OpenAPI 3
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
-	// QueryDSL
-	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-	annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
-	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
-
 	// 공통 모듈
 	implementation files('libs/common-response-0.0.1-SNAPSHOT.jar')
 	implementation files('libs/common-exception-0.0.1-SNAPSHOT.jar')
@@ -49,15 +42,4 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-}
-
-// QueryDSL 설정
-def querydslDir = 'src/main/generated'
-
-sourceSets {
-	main.java.srcDirs += querydslDir
-}
-
-tasks.withType(JavaCompile).configureEach {
-	options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
