@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -81,4 +82,11 @@ public class HolidaySyncService {
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
+
+    @Transactional
+    public void refresh(int year, String countryCode) {
+        holidayRepository.deleteByYearAndCountryCode(year, countryCode);
+        sync(year, countryCode);
+    }
+
 }

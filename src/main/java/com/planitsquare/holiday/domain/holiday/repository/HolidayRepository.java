@@ -4,6 +4,7 @@ import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -29,5 +30,9 @@ public interface HolidayRepository extends JpaRepository<Holiday, Long> {
             @Param("countryCode") String countryCode,
             Pageable pageable
     );
+
+    @Modifying
+    @Query("DELETE FROM Holiday h WHERE YEAR(h.date) = :year AND h.countryCode = :countryCode")
+    void deleteByYearAndCountryCode(@Param("year") int year, @Param("countryCode") String countryCode);
 
 }
