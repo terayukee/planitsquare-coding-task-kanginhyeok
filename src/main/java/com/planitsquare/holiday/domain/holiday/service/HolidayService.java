@@ -31,7 +31,7 @@ public class HolidayService {
     /**
      * 비동기 처리
      */
-    @Async
+    @Async("taskExecutor")
     public CompletableFuture<Void> syncAsync(int year, String countryCode) {
         try {
             List<PublicHolidayResponse> response = publicHolidayClient.getHolidays(year, countryCode);
