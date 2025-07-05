@@ -40,4 +40,15 @@ class HolidayServiceTest {
         assertFalse(holidays.isEmpty());
         assertEquals(year, holidays.get(0).getDate().getYear());
     }
+
+    @Test
+    void 최근_5개년_전체_국가의_공휴일을_일괄_적재한다() {
+        // when
+        holidayService.bulkSyncAll();
+
+        // then
+        List<Holiday> holidays = holidayRepository.findAll();
+        assertFalse(holidays.isEmpty(), "전체 국가의 공휴일이 저장되어야 함");
+    }
+
 }
