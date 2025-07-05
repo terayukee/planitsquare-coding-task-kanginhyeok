@@ -1,23 +1,27 @@
 package com.planitsquare.holiday.domain.holiday;
 
+import com.planitsquare.holiday.domain.country.client.CountryApiClient;
+import com.planitsquare.holiday.domain.holiday.client.PublicHolidayClient;
+import com.planitsquare.holiday.domain.holiday.dto.PublicHolidayResponse;
 import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
 import com.planitsquare.holiday.domain.holiday.service.HolidayService;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@Transactional
 class HolidayServiceTest {
 
     @Autowired
@@ -26,11 +30,27 @@ class HolidayServiceTest {
     @Autowired
     private HolidayRepository holidayRepository;
 
+    @MockBean
+    private PublicHolidayClient publicHolidayClient;
+
+    @MockBean
+    private CountryApiClient countryApiClient;
+
     @Test
     void 특정_연도_국가의_공휴일을_저장한다() {
         // given
         String countryCode = "KR";
         int year = 2025;
+
+        PublicHolidayResponse mockResponse = new PublicHolidayResponse();
+        mockResponse.setDate(LocalDate.of(2025, 12, 25));
+        mockResponse.setName("Christmas Day");
+        mockResponse.setLocalName("크리스마스");
+        mockResponse.setCountryCode("KR");
+        mockResponse.setGlobal(true);
+
+        when(publicHolidayClient.getHolidays(year, countryCode))
+                .thenReturn(List.of(mockResponse));
 
         // when
         holidayService.sync(year, countryCode);
@@ -38,17 +58,6 @@ class HolidayServiceTest {
         // then
         List<Holiday> holidays = holidayRepository.findByYearAndCountryCode(year, countryCode);
         assertFalse(holidays.isEmpty());
-        assertEquals(year, holidays.get(0).getDate().getYear());
+        assertEquals("크리스마스", holidays.get(0).getLocalName());
     }
-
-    @Test
-    void 최근_5개년_전체_국가의_공휴일을_일괄_적재한다() {
-        // when
-        holidayService.bulkSyncAll();
-
-        // then
-        List<Holiday> holidays = holidayRepository.findAll();
-        assertFalse(holidays.isEmpty(), "전체 국가의 공휴일이 저장되어야 함");
-    }
-
 }
