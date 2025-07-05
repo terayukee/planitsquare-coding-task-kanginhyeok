@@ -26,19 +26,19 @@ class HolidaySearchTest {
 
     @BeforeEach
     void setUp() {
-        holidayRepository.deleteAll(); // 💡 기존 데이터 초기화
+        holidayRepository.deleteAll(); // 🔄 기존 데이터 초기화
 
-        Holiday holiday = Holiday.builder()
-                .date(LocalDate.of(2025, 12, 25))
-                .name("Christmas Day")
-                .localName("크리스마스")
-                .countryCode("KR")
-                .global(true)
-                .fixed(false)
-                .types(List.of("Public"))
-                .build();
-
-        holidayRepository.save(holiday);
+        holidayRepository.save(
+                Holiday.builder()
+                        .date(LocalDate.of(2025, 12, 25))
+                        .name("Christmas Day")
+                        .localName("크리스마스")
+                        .countryCode("KR")
+                        .global(true)
+                        .fixed(false)
+                        .types(List.of("Public", "Religious"))
+                        .build()
+        );
     }
 
     @Test
@@ -49,7 +49,7 @@ class HolidaySearchTest {
                 .countryCode("KR")
                 .from(LocalDate.of(2025, 1, 1))
                 .to(LocalDate.of(2025, 12, 31))
-                .types(List.of("Public"))
+                .types(List.of("Public")) // ✅ types 필터링
                 .page(0)
                 .size(10)
                 .build();
@@ -58,8 +58,11 @@ class HolidaySearchTest {
         Page<Holiday> result = holidayService.search(request);
 
         // then
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals("KR", result.getContent().get(0).getCountryCode());
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertFalse(result.isEmpty(), "검색 결과는 비어있지 않아야 합니다."),
+                () -> assertEquals("KR", result.getContent().get(0).getCountryCode()),
+                () -> assertTrue(result.getContent().get(0).getTypes().contains("Public"))
+        );
     }
 }

@@ -10,7 +10,7 @@ import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -108,11 +108,33 @@ public class HolidayService {
     }
 
     public Page<Holiday> search(HolidaySearchRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize());
-        return holidayRepository.searchByYearAndCountryCode(
+        Page<Holiday> result = holidayRepository.searchByYearAndCountryCode(
                 request.getYear(),
                 request.getCountryCode(),
-                pageRequest
+                request.toPageable()
         );
+
+        // 필터링
+        List<Holiday> filtered = result.stream()
+                .filter(h -> {
+                    if (request.hasDateFilter()) {
+                        if (h.getDate().isBefore(request.getFrom()) || h.getDate().isAfter(request.getTo())) {
+                            return false;
+                        }
+                    }
+
+                    if (request.hasTypeFilter()) {
+                        if (h.getTypes().stream().noneMatch(request.getTypes()::contains)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                })
+                .toList();
+
+        // 다시 Page로 감싸기 (PageImpl 사용)
+        return new PageImpl<>(filtered, result.getPageable(), result.getTotalElements());
     }
+
 }
