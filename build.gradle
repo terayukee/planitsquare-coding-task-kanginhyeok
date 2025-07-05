@@ -16,22 +16,6 @@ java {
 
 repositories {
 	mavenCentral()
-
-	// 공통 모듈 GitHub Packages
-	maven {
-		url = uri("https://maven.pkg.github.com/terayukee/common-response")
-		credentials {
-			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-			password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-		}
-	}
-	maven {
-		url = uri("https://maven.pkg.github.com/terayukee/common-exception")
-		credentials {
-			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-			password = project.findProperty("gpr.key") ?: System.getenv("GITHUB_TOKEN")
-		}
-	}
 }
 
 dependencies {
@@ -52,8 +36,8 @@ dependencies {
 	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 
 	// 공통 모듈
-	implementation 'com.terayukee:common-response:0.0.1-SNAPSHOT'
-	implementation 'com.terayukee:common-exception:0.0.1-SNAPSHOT'
+	implementation files('libs/common-response-0.0.1-SNAPSHOT.jar')
+	implementation files('libs/common-exception-0.0.1-SNAPSHOT.jar')
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok:1.18.30'
