@@ -7,10 +7,16 @@ import com.planitsquare.holiday.domain.holiday.dto.PublicHolidayResponse;
 import com.planitsquare.holiday.domain.holiday.entity.Holiday;
 import com.planitsquare.holiday.domain.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HolidayService {
@@ -21,6 +27,51 @@ public class HolidayService {
     private final CountryApiClient countryApiClient;
     private final PublicHolidayClient publicHolidayClient;
     private final HolidayRepository holidayRepository;
+
+    /**
+     * 비동기 처리
+     */
+    @Async
+    public CompletableFuture<Void> syncAsync(int year, String countryCode) {
+        try {
+            List<PublicHolidayResponse> response = publicHolidayClient.getHolidays(year, countryCode);
+            List<Holiday> holidays = response.stream()
+                    .map(r -> Holiday.builder()
+                            .date(r.getDate())
+                            .name(r.getName())
+                            .localName(r.getLocalName())
+                            .countryCode(r.getCountryCode())
+                            .global(r.isGlobal())
+                            .fixed(r.isFixed())
+                            .types(r.getTypes())
+                            .build()
+                    )
+                    .toList();
+            holidayRepository.saveAll(holidays);
+            log.info("✅ {}년 {} 공휴일 저장 완료", year, countryCode);
+        } catch (Exception e) {
+            log.warn("❌ {}년 {} 공휴일 저장 실패: {}", year, countryCode, e.getMessage());
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * 전체 연도 × 국가 조합 병렬 처리
+     */
+    public void bulkSyncAll() {
+        List<CountryResponse> countries = countryApiClient.getAvailableCountries();
+
+        List<CompletableFuture<Void>> futures = countries.stream()
+                .flatMap(country ->
+                        IntStream.rangeClosed(START_YEAR, END_YEAR)
+                                .mapToObj(year -> syncAsync(year, country.getCountryCode()))
+                )
+                .collect(Collectors.toList());
+
+        // 모든 비동기 작업 완료까지 대기
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    }
+
 
     public void sync(int year, String countryCode) {
         List<PublicHolidayResponse> response = publicHolidayClient.getHolidays(year, countryCode);
@@ -39,7 +90,6 @@ public class HolidayService {
         holidayRepository.saveAll(holidays);
     }
 
-
     public void syncByYear(int year) {
         List<CountryResponse> countries = countryApiClient.getAvailableCountries();
         for (CountryResponse country : countries) {
@@ -50,12 +100,6 @@ public class HolidayService {
     public void syncByCountry(String countryCode) {
         for (int year = START_YEAR; year <= END_YEAR; year++) {
             sync(year, countryCode);
-        }
-    }
-
-    public void bulkSyncAll() {
-        for (int year = START_YEAR; year <= END_YEAR; year++) {
-            syncByYear(year);
         }
     }
 }
