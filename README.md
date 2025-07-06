@@ -32,7 +32,9 @@ $ ./gradlew bootRun
 
 `./gradlew clean test` 실행 결과:
 
-> ✅ *이곳에 테스트 성공 스크린샷 첨부 예정*
+![image](https://github.com/user-attachments/assets/89b9e0ff-1235-45ec-a9be-d59a672e4db7)
+![image](https://github.com/user-attachments/assets/13572303-c9aa-44f3-972f-eb255d87cf6f)
+
 
 ---
 
