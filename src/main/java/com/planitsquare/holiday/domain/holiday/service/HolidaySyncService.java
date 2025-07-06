@@ -20,6 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.planitsquare.holiday.global.util.HolidayValidator.validateYear;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,6 +38,7 @@ public class HolidaySyncService {
      * 특정 국가의 특정 연도 공휴일을 외부 API에서 조회하고 저장합니다.
      */
     public void sync(int year, String countryCode) {
+        validateYear(year);
         try {
             List<Holiday> holidays = fetchAndConvertHolidays(year, countryCode);
             if (holidays.isEmpty()) {
@@ -56,6 +59,7 @@ public class HolidaySyncService {
      * 특정 연도의 모든 국가 공휴일을 동기화합니다.
      */
     public void syncByYear(int year) {
+        validateYear(year);
         List<CountryResponse> countries = getAvailableCountries();
 
         for (CountryResponse country : countries) {
@@ -77,6 +81,7 @@ public class HolidaySyncService {
      */
     @Async("taskExecutor")
     public CompletableFuture<Void> syncAsync(int year, String countryCode) {
+        validateYear(year);
         try {
             sync(year, countryCode);
             log.info("✅ {}년 {} 공휴일 저장 완료", year, countryCode);
@@ -113,6 +118,7 @@ public class HolidaySyncService {
      */
     @Transactional
     public void refresh(int year, String countryCode) {
+        validateYear(year);
         deleteInternal(year, countryCode);
         sync(year, countryCode);
     }
@@ -122,6 +128,7 @@ public class HolidaySyncService {
      */
     @Transactional
     public void delete(int year, String countryCode) {
+        validateYear(year);
         deleteInternal(year, countryCode);
         log.info("🗑️ {}년 {} 공휴일 삭제 완료", year, countryCode);
     }

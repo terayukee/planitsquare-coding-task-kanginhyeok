@@ -68,7 +68,7 @@ public class HolidaySearchService {
      * @param request HolidaySearchRequest
      */
     private void validateRequest(HolidaySearchRequest request) {
-        if (request.getYear() < 1900 || request.getYear() > LocalDate.now().getYear()) {
+        if (request.getYear() > LocalDate.now().getYear()) {
             throw new HolidayException(HolidayErrorCode.INVALID_YEAR);
         }
 
