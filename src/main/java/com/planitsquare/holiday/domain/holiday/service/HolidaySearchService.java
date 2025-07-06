@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -67,7 +68,7 @@ public class HolidaySearchService {
      * @param request HolidaySearchRequest
      */
     private void validateRequest(HolidaySearchRequest request) {
-        if (request.getYear() < 1900 || request.getYear() > 2100) {
+        if (request.getYear() < 1900 || request.getYear() > LocalDate.now().getYear()) {
             throw new HolidayException(HolidayErrorCode.INVALID_YEAR);
         }
 
