@@ -14,7 +14,7 @@ $ ./gradlew bootRun
 ```
 
 - Java: 21
-- Spring Boot: 3.4.x
+- Spring Boot: 3.4.0
 - 실행 포트: `8080`
 
 ---
@@ -50,10 +50,10 @@ $ ./gradlew bootRun
 | 항목        | 내용                    |
 |-------------|-------------------------|
 | 언어        | Java 21                 |
-| 프레임워크  | Spring Boot 3.4.x       |
+| 프레임워크  | Spring Boot 3.4.0       |
 | 데이터베이스| H2 In-Memory DB         |
 | ORM         | Spring Data JPA (Hibernate) |
-| 문서화      | SpringDoc OpenAPI 2.3   |
+| 문서화      | SpringDoc OpenAPI 2.7.0   |
 | 기타        | Lombok, RestControllerAdvice |
 
 ---
