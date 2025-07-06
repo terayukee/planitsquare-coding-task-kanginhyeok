@@ -22,13 +22,13 @@ public class HolidayDataInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-//        if (holidayRepository.count() > 0) {
-//            log.info("✅ 기존 공휴일 데이터가 존재하므로 초기 적재를 생략합니다.");
-//            return;
-//        }
-//
-//        log.info("🚀 최초 실행: 최근 5년간 전체 국가 공휴일 데이터를 적재합니다.");
-//        holidaySyncService.bulkSyncAll();
-//        log.info("🎉 초기 데이터 적재 완료");
+        if (holidayRepository.count() > 0) {
+            log.info("✅ 기존 공휴일 데이터가 존재하므로 초기 적재를 생략합니다.");
+            return;
+        }
+
+        log.info("🚀 최초 실행: 최근 5년간 전체 국가 공휴일 데이터를 적재합니다.");
+        holidaySyncService.bulkSyncAll();
+        log.info("🎉 초기 데이터 적재 완료");
     }
 }
