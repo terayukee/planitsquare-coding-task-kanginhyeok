@@ -1,6 +1,8 @@
 package com.planitsquare.holiday.domain.holiday.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.planitsquare.holiday.domain.holiday.service.HolidaySyncService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -21,6 +24,11 @@ class HolidaySearchControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeAll
+    static void setUpAll(@Autowired HolidaySyncService holidaySyncService) {
+        holidaySyncService.sync(2025, "KR");
+    }
 
     @Test
     @DisplayName("✅ 연도와 국가코드 기준 공휴일 검색 성공")
