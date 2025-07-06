@@ -15,6 +15,9 @@ java {
 
 repositories {
 	mavenCentral()
+	flatDir {
+		dirs 'libs'
+	}
 }
 
 dependencies {
@@ -29,8 +32,8 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
 	// 공통 모듈
-	implementation files('libs/common-response-0.0.1-SNAPSHOT.jar')
-	implementation files('libs/common-exception-0.0.1-SNAPSHOT.jar')
+	implementation name: 'common-response-0.0.1-SNAPSHOT'
+	implementation name: 'common-exception-0.0.1-SNAPSHOT'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok:1.18.30'
